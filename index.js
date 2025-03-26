@@ -23,14 +23,40 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("Bistro-Boss-Restaurant");
     const menuCollection = db.collection("Menu");
+    const reviewsCollection = db.collection("Reviews");
+    const cartCollection = db.collection("Carts");
 
     app.get("/menu", async (req, res) => {
       const menu = await menuCollection.find().toArray();
       res.send(menu);
+    });
+
+    app.get("/reviews", async (req, res) => {
+      const reviews = await reviewsCollection.find().toArray();
+      res.send(reviews);
+    });
+
+    // Post Cart Item
+    app.get("/carts", async (req, res) => {
+      const email = req.query.email;
+      if (email) {
+        query = { email: email };
+      }
+      console.log("email:", email);
+      console.log("query: ", query);
+      const carts = await cartCollection.find(query).toArray();
+      res.send(carts);
+    });
+
+    // Post Cart Item
+    app.post("/carts", async (req, res) => {
+      const cartItem = req.body;
+      const cart = await cartCollection.insertOne(cartItem);
+      res.send(cart);
     });
 
     // Send a ping to confirm a successful connection
