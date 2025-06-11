@@ -133,6 +133,11 @@ async function run() {
       const menu = await menuCollection.find().toArray();
       res.send(menu);
     });
+    app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
+      const newMenu = req.body;
+      const result = await menuCollection.insertOne(newMenu);
+      res.send(result);
+    });
 
     app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
