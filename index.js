@@ -133,10 +133,42 @@ async function run() {
       const menu = await menuCollection.find().toArray();
       res.send(menu);
     });
+    app.get("/menu/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("id -", id);
+      const query = { _id: id };
+      console.log("Filter -", query);
+      const result = await menuCollection.findOne(query);
+      res.send(result);
+    });
     app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
       const newMenu = req.body;
       const result = await menuCollection.insertOne(newMenu);
       res.send(result);
+    });
+    app.patch("/menu/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const item = req.body;
+      console.log("Image", item.image);
+      const id = req.params.id;
+      const filter = { _id: id };
+      const updatedDoc = {
+        $set: {
+          name: item.name,
+          category: item.category,
+          price: item.price,
+          recipe: item.recipe,
+          image: item.image,
+        },
+      };
+      const result = await menuCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+    app.delete("/menu/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const deletedItem = await menuCollection.deleteOne(query);
+      console.log(deletedItem);
+      res.send(deletedItem);
     });
 
     app.get("/reviews", async (req, res) => {
